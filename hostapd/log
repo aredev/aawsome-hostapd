@@ -1,0 +1,13 @@
+Configuration file: hostapd.conf
+Using interface wlan0 with hwaddr c4:e9:84:d7:70:63 and ssid "pifi"
+wlan0: interface state UNINITIALIZED->ENABLED
+wlan0: AP-ENABLED 
+wlan0: CTRL-EVENT-EAP-STARTED c4:e9:84:1d:96:3d
+wlan0: CTRL-EVENT-EAP-PROPOSED-METHOD vendor=0 method=1
+wlan0: CTRL-EVENT-EAP-PROPOSED-METHOD vendor=0 method=4
+wlan0: CTRL-EVENT-EAP-SUCCESS c4:e9:84:1d:96:3d
+handle_auth_cb: STA c4:e9:84:1d:96:3d not found
+handle_auth_cb: STA c4:e9:84:1d:96:3d not found
+wlan0: interface state ENABLED->DISABLED
+wlan0: AP-DISABLED 
+nl80211: deinit ifname=wlan0 disabled_11b_rates=0
