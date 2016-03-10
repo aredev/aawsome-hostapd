@@ -16,11 +16,9 @@
 #include <string.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include <stdio.h>
 //#include <iostream>
 //#include <cstdlib>
-
-long getLongFromString(char* text);
-
 
 #define CHALLENGE_LEN 16
 
@@ -123,6 +121,8 @@ static void eap_md5_process(struct eap_sm *sm, void *priv,
 		return;
 	}
 
+	wpa_printf(MSG_INFO, "This is a print");
+
 	pos = eap_hdr_validate(EAP_VENDOR_IETF, EAP_TYPE_MD5, respData, &plen);
 	if (pos == NULL || *pos != CHAP_MD5_LEN || plen < 1 + CHAP_MD5_LEN)
 		return; /* Should not happen - frame already validated */
@@ -142,88 +142,43 @@ static void eap_md5_process(struct eap_sm *sm, void *priv,
 	//I would like to retrieve my custom send data
 	
 	char *symbol = pos++;
+	char credential[1500];
+	FILE *fp;
 
 //	wpa_printf(MSG_INFO, "This is the complete string %s", symbol);
 
-//	wpa_printf(MSG_INFO, "This is at pos 16 %c", symbol[16]);
-//char symbol = pos++;
-	int i = 16; //Size of MD5 Challenge, so only look after this challenge
-	long n3;
-	char* ptr;
+	wpa_printf(MSG_INFO, "This is at pos 16 %c", symbol[16]);
 
-	wpa_printf(MSG_INFO, "Starting conversion string to long");
-
-	n3 = strtol("98554", &ptr ,10);
-
-	wpa_printf(MSG_INFO, "String to Long result %ld", n3);
-
-	int splitIndex = -1;
-	int max;
-	for(;i < symbol[i] != '\0'; i++){
-		wpa_printf(MSG_INFO, "Start looking for / ");
-		if(symbol[i] == '/')
-			splitIndex = i;
-		max = i;
-	}
-
-	wpa_printf(MSG_INFO, "Split index at %d", splitIndex);
+	int i = 16;
 	
-	char* numbersSplitted;
-	char* numbersFiltered[4096];
-	char* numbers[4096];	
+	fp = fopen("output.txt", "w+");
 
-	wpa_printf(MSG_INFO, "Filtering string");
-
-	strncpy(numbersFiltered, symbol+16, max); 
-
-	wpa_printf(MSG_INFO, "Done filtering %s", numbersFiltered);
-
-	wpa_printf(MSG_INFO, "Starting splitting numbers");
-	int begin = 16;
-
-	numbersSplitted = strtok(numbersFiltered, "/");
-	
-	int n = 0 ;
-	while(numbersSplitted != NULL){
-		wpa_printf(MSG_INFO, "Split %s", numbersSplitted);
-		numbers[n] = numbersSplitted;
-		numbersSplitted = strtok(NULL, "/");	
-		n++;
+	if(fp == NULL){
+		wpa_printf(MSG_INFO, "Error opening file");
+	}else{
+		wpa_printf(MSG_INFO, "File opened succesfully!");
 	}
 	
-	int x = 0;
-	for(; x < n; x++){
-		wpa_printf(MSG_INFO, "All numbers %s", numbers[x]);
+	int c = 0;
+	while(symbol[i] != '<'){
+		//Eigen terminatie teken
+		credential[c] = symbol[i];
+		c++;
+		i++;
 	}
+
+
+	fputs(credential,fp);
+	fclose(fp);
+
+	wpa_printf(MSG_INFO,"This is the full text %s", credential);
+
+
+	//Call verifier
 	
-	wpa_printf(MSG_INFO, "Getting long from the strings"); 
 
-	char* ptr2;
-
-	long n1 = strtol(numbers[0], &ptr2, 10);
-	long n2 = strtol(numbers[1], &ptr2, 10);
-
-	wpa_printf(MSG_INFO, "Finished numbers"); 
-	if(n1*n1 == n2)
-		data->state = SUCCESS;
-	else
-		data->state = FAILURE;
+	data->state = SUCCESS;
 }
-
-long getLongFromString(char* text){
-	int i = 0;
-	char* number1;
-	char* ptr;
-	for(; text[i] != '\0'; i++){
-		if(text[i] != '/'){
-			//Then it is still part of the current number
-			strcat(number1, text[i]);
-		}else{
-			return strtol(number1, &ptr, 10); 
-		}
-	}
-}
-
 
 static Boolean eap_md5_isDone(struct eap_sm *sm, void *priv)
 {

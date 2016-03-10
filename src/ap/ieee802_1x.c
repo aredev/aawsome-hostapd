@@ -720,6 +720,7 @@ static void handle_eap_response(struct hostapd_data *hapd,
 
 	wpabuf_free(sm->eap_if->eapRespData);
 	sm->eap_if->eapRespData = wpabuf_alloc_copy(eap, len);
+	wpa_printf(MSG_INFO, "Hier");
 	sm->eapolEap = TRUE;
 }
 
@@ -791,7 +792,7 @@ static void handle_eap(struct hostapd_data *hapd, struct sta_info *sta,
 		wpa_printf(MSG_DEBUG, " (request)");
 		return;
 	case EAP_CODE_RESPONSE:
-		wpa_printf(MSG_DEBUG, " (response)");
+		wpa_printf(MSG_DEBUG, " (response) < hier ben ik");
 		handle_eap_response(hapd, sta, eap, eap_len);
 		break;
 	case EAP_CODE_SUCCESS:
