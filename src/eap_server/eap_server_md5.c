@@ -17,10 +17,8 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <stdio.h>
-//#include <iostream>
-//#include <cstdlib>
 
-#define CHALLENGE_LEN 16
+#define CHALLENGE_LEN 350
 
 struct eap_md5_data {
 	u8 challenge[CHALLENGE_LEN];
@@ -68,10 +66,37 @@ static struct wpabuf * eap_md5_buildReq(struct eap_sm *sm, void *priv, u8 id)
 		return NULL;
 	}
 
+	//Call for context and nonce
+
+	wpa_printf(MSG_INFO, "Generating freshness for this session...");
+
+	system("java -jar crypto-all-1.0-SNAPSHOT.jar c");
+
+	wpa_printf(MSG_INFO, "Freshness generated. Saving freshness...");
+
+	FILE *fp;
+
+	fp = fopen("c.txt", "rb");
+
+	char context[257];
+	char nonce[81];
+
+	fgets(context, sizeof(context)-1, fp);
+	fgets(nonce, sizeof(context)-1, fp);
+
+//	wpa_printf(MSG_INFO, "This is the challenge %s", context);
+//	wpa_hexdump(MSG_MSGDUMP, "EAP-MD5: Challenge", data->challenge,
+//		    CHALLENGE_LEN);
+
+	char total[350] = " ";
+	strcat(total, context);
+	strcat(total, "\n");
+	strcat(total, nonce);
+
 	wpabuf_put_u8(req, CHALLENGE_LEN);
-	wpabuf_put_data(req, data->challenge, CHALLENGE_LEN);
-	wpa_hexdump(MSG_MSGDUMP, "EAP-MD5: Challenge", data->challenge,
-		    CHALLENGE_LEN);
+	wpa_printf(MSG_INFO, "This is the challenge message: %s", total);
+
+	wpabuf_put_data(req, total, CHALLENGE_LEN);
 
 	data->state = CONTINUE;
 
@@ -121,7 +146,7 @@ static void eap_md5_process(struct eap_sm *sm, void *priv,
 		return;
 	}
 
-	wpa_printf(MSG_INFO, "This is a print");
+	wpa_printf(MSG_INFO, "Received disclosed attribute and proof of user");
 
 	pos = eap_hdr_validate(EAP_VENDOR_IETF, EAP_TYPE_MD5, respData, &plen);
 	if (pos == NULL || *pos != CHAP_MD5_LEN || plen < 1 + CHAP_MD5_LEN)
@@ -145,11 +170,9 @@ static void eap_md5_process(struct eap_sm *sm, void *priv,
 	char credential[1500];
 	FILE *fp;
 
-//	wpa_printf(MSG_INFO, "This is the complete string %s", symbol);
-
-	wpa_printf(MSG_INFO, "This is at pos 16 %c", symbol[16]);
-
 	int i = 16;
+
+	wpa_printf(MSG_INFO, "Serializing proof...");
 	
 	fp = fopen("output.txt", "w+");
 
@@ -158,7 +181,8 @@ static void eap_md5_process(struct eap_sm *sm, void *priv,
 	}else{
 		wpa_printf(MSG_INFO, "File opened succesfully!");
 	}
-	
+
+	//Write received message to a file	
 	int c = 0;
 	while(symbol[i] != '<'){
 		//Eigen terminatie teken
@@ -167,15 +191,13 @@ static void eap_md5_process(struct eap_sm *sm, void *priv,
 		i++;
 	}
 
-
 	fputs(credential,fp);
 	fclose(fp);
 
-	wpa_printf(MSG_INFO,"This is the full text %s", credential);
-
-
 	//Call verifier
-	
+	wpa_printf(MSG_INFO, "Checking wheter everything if fine");
+
+	system("java -jar crypto-all-1.0-SNAPSHOT.jar v");	
 
 	data->state = SUCCESS;
 }
