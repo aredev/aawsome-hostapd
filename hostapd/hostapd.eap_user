@@ -78,11 +78,13 @@
 #"6"*		AKA'
 #"7"*		AKA'
 #"8"*		AKA'
+*		TTLS
 
 # Wildcard for all other identities
 #*		PEAP,TTLS,TLS,SIM,AKA
 
 # Phase 2 (tunnelled within EAP-PEAP or EAP-TTLS) users
+"bob"		MD5	"hello"
 "t-md5"		MD5	"password"	[2]
 "DOMAIN\t-mschapv2"	MSCHAPV2	"password"	[2]
 "t-gtc"		GTC	"password"	[2]
