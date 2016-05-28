@@ -720,7 +720,6 @@ static void handle_eap_response(struct hostapd_data *hapd,
 
 	wpabuf_free(sm->eap_if->eapRespData);
 	sm->eap_if->eapRespData = wpabuf_alloc_copy(eap, len);
-	wpa_printf(MSG_INFO, "Hier");
 	sm->eapolEap = TRUE;
 }
 

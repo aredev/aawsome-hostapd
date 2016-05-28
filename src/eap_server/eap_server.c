@@ -379,6 +379,8 @@ SM_STATE(EAP, INTEGRITY_CHECK)
 		return;
 	}
 
+	wpa_printf(MSG_INFO, "Dit is het resultaat %b", sm->m->check);
+
 	if (sm->m->check) {
 		sm->ignore = sm->m->check(sm, sm->eap_method_priv,
 					  sm->eap_if.eapRespData);
@@ -1698,6 +1700,9 @@ static int eap_sm_Policy_getDecision(struct eap_sm *sm)
 		sm->update_user = TRUE;
 		return DECISION_SUCCESS;
 	}
+
+
+	wpa_printf(MSG_INFO, "getDecision: %s", sm->m);
 
 	if (sm->m && sm->m->isDone(sm, sm->eap_method_priv) &&
 	    !sm->m->isSuccess(sm, sm->eap_method_priv)) {

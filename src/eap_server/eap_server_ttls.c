@@ -45,6 +45,7 @@ struct eap_ttls_data {
 static const char * eap_ttls_state_txt(int state)
 {
 	switch (state) {
+	wpa_printf(MSG_INFO, "TTLS State: %s", state);
 	case START:
 		return "START";
 	case PHASE1:

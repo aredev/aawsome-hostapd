@@ -371,13 +371,17 @@ static int eap_server_tls_reassemble(struct eap_ssl_data *data, u8 flags,
 	}
 
 	if (data->tls_in &&
-	    eap_server_tls_process_cont(data, *pos, end - *pos) < 0)
+	    eap_server_tls_process_cont(data, *pos, end - *pos) < 0){
+		wpa_printf(MSG_INFO, "Geval 1");
 		return -1;
+	}
 		
 	if (flags & EAP_TLS_FLAGS_MORE_FRAGMENTS) {
 		if (eap_server_tls_process_fragment(data, flags, tls_msg_len,
-						    *pos, end - *pos) < 0)
+						    *pos, end - *pos) < 0){
+			wpa_printf(MSG_INFO, "Geval 2");
 			return -1;
+		}
 
 		data->state = FRAG_ACK;
 		return 1;

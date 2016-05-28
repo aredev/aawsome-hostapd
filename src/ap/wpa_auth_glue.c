@@ -274,7 +274,7 @@ static int hostapd_wpa_auth_get_msk(void *ctx, const u8 *addr, u8 *msk,
 	if (key == NULL) {
 		wpa_printf(MSG_DEBUG, "AUTH_GET_MSK: Key is null, eapol_sm: %p",
 			   sta->eapol_sm);
-		return -1;
+	//	return -1;
 	}
 
 	if (keylen > *len)

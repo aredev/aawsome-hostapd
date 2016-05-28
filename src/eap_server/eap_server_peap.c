@@ -1112,9 +1112,9 @@ static void eap_peap_process_phase2(struct eap_sm *sm,
 			   "Phase 2 EAP frame (len=%lu hdr->length=%lu)",
 			   (unsigned long) wpabuf_len(in_decrypted),
 			   (unsigned long) len);
-		wpabuf_free(in_decrypted);
-		eap_peap_req_failure(sm, data);
-		return;
+		//wpabuf_free(in_decrypted);
+		//eap_peap_req_failure(sm, data);
+		//return;
 	}
 	wpa_printf(MSG_DEBUG, "EAP-PEAP: received Phase 2: code=%d "
 		   "identifier=%d length=%lu", hdr->code, hdr->identifier,

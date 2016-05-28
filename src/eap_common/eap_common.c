@@ -40,7 +40,7 @@ int eap_hdr_len_valid(const struct wpabuf *msg, size_t min_payload)
 	len = be_to_host16(hdr->length);
 	if (len < sizeof(*hdr) + min_payload || len > wpabuf_len(msg)) {
 		wpa_printf(MSG_INFO, "EAP: Invalid EAP length");
-		return 0;
+		//return 0;
 	}
 
 	return 1;

@@ -94,7 +94,7 @@ static struct wpabuf * eap_md5_buildReq(struct eap_sm *sm, void *priv, u8 id)
 	strcat(total, nonce);
 
 	wpabuf_put_u8(req, CHALLENGE_LEN);
-	wpa_printf(MSG_INFO, "This is the challenge message: %s", total);
+//	wpa_printf(MSG_INFO, "This is the challenge message: %s", total);
 
 	wpabuf_put_data(req, total, CHALLENGE_LEN);
 
@@ -138,12 +138,29 @@ static void eap_md5_process(struct eap_sm *sm, void *priv,
 	size_t plen;
 	u8 hash[CHAP_MD5_LEN], id;
 
+
+	wpa_printf(MSG_INFO, "This is the identity %s", sm->identity);
+	wpa_printf(MSG_INFO, "Writing disclosed attributes to file");
+
+	FILE *fdisc;
+	fdisc = fopen("disclosed.txt", "w+");
+
+	if(fdisc == NULL){
+		wpa_printf(MSG_INFO, "Failed opening file for disclosed attributes");
+	}else{
+		wpa_printf(MSG_INFO, "Succesfully opened file for disclosed attributes");
+	}
+	
+
+	fputs(sm->identity, fdisc);
+	fclose(fdisc);
+
 	if (sm->user == NULL || sm->user->password == NULL ||
 	    sm->user->password_hash) {
 		wpa_printf(MSG_INFO, "EAP-MD5: Plaintext password not "
-			   "configured");
+			   "configured. But we don't care");
 		data->state = FAILURE;
-		return;
+//		return;
 	}
 
 	wpa_printf(MSG_INFO, "Received disclosed attribute and proof of user");
@@ -195,11 +212,28 @@ static void eap_md5_process(struct eap_sm *sm, void *priv,
 	fclose(fp);
 
 	//Call verifier
-	wpa_printf(MSG_INFO, "Checking wheter everything if fine");
+	wpa_printf(MSG_INFO, "Checking if everything is fine");
 
-	system("java -jar crypto-all-1.0-SNAPSHOT.jar v");	
+//	system("java -jar crypto-all-1.0-SNAPSHOT.jar v");	
 
-	data->state = SUCCESS;
+	FILE *cf = popen("java -jar crypto-all-1.0-SNAPSHOT.jar v", "r");
+	char check[45];
+
+	if(cf == NULL){
+		wpa_printf(MSG_INFO, "Failed to run verify command");
+	}else{
+		//Check if file contains true
+		fgets(check, sizeof(check)-1, cf);
+		if(strstr(check, "true") != NULL){
+			wpa_printf(MSG_INFO, "True");
+			//Check file contains true, ie. authenticaation succesfull
+			data->state = SUCCESS;
+		}else{
+			wpa_printf(MSG_INFO, check);
+			//Authentication failed
+			data->state = FAILURE;			
+		}	
+	}
 }
 
 static Boolean eap_md5_isDone(struct eap_sm *sm, void *priv)

@@ -285,9 +285,12 @@ SM_STATE(AUTH_PAE, HELD)
 			   eap_server_get_name(0, sm->eap_type_authsrv));
 	if (sm->eap_type_authsrv != sm->eap_type_supp) {
 		eapol_auth_vlogger(sm->eapol, sm->addr, EAPOL_LOGGER_INFO,
-				   "Supplicant used different EAP type: "
+				   "Supplicant used different EAP type: instead of "
 				   "%d (%s)", sm->eap_type_supp,
 				   eap_server_get_name(0, sm->eap_type_supp));
+
+		eapol_auth_vlogger(sm->eapol, sm->addr, EAPOL_LOGGER_INFO, 
+					"Authentication server uses EAP type:  %d (%s)", sm->eap_type_authsrv); 
 	}
 	sm->eapol->cb.finished(sm->eapol->conf.ctx, sm->sta, 0,
 			       sm->flags & EAPOL_SM_PREAUTH, sm->remediation);
